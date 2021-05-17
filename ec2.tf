@@ -23,6 +23,11 @@ data "aws_ami" "ubuntu" {
   ]
 }
 
+resource "tls_private_key" "rsa" {
+  count     = var.SSH_PUBLIC_KEY == null ? 1 : 0
+  algorithm = "RSA"
+}
+
 module "sg-jenkins" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "4.0.0"
@@ -55,7 +60,7 @@ module "key-jenkins" {
   version = "1.0.0"
 
   key_name   = "jenkins-key"
-  public_key = var.SSH_PUBLIC_KEY
+  public_key = var.SSH_PUBLIC_KEY == null ? tls_private_key.rsa[0].public_key_openssh : var.SSH_PUBLIC_KEY
 
   tags = local.PROJECT_TAGS
 }
