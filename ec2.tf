@@ -36,7 +36,7 @@ module "sg-jenkins" {
   vpc_id = data.aws_vpc.default.id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_rules       = ["http-80-tcp", "https-443-tcp", "all-icmp"]
+  ingress_rules       = ["http-80-tcp", "https-443-tcp", "http-8080-tcp", "all-icmp"]
 
   ingress_with_cidr_blocks = concat(
     var.EC2_INSTANCE_CONNECT == true ? [
