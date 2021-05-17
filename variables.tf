@@ -12,8 +12,7 @@ variable "AWS_SESSION_TOKEN" {
 }
 
 variable "AWS_DEFAULT_REGION" {
-  type    = string
-  default = "us-east-1"
+  type = string
 }
 
 variable "EC2_INSTANCE_CONNECT" {
