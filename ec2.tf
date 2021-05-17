@@ -36,7 +36,12 @@ module "sg-jenkins" {
   ingress_with_cidr_blocks = [
     {
       rule        = "ssh-tcp"
-      cidr_blocks = "127.0.0.1/32"
+      cidr_blocks = "18.206.107.24/29"
+      description = "EC2_INSTANCE_CONNECT"
+    },
+    {
+      rule        = "ssh-tcp"
+      cidr_blocks = var.PUBLIC_IP
     }
   ]
 
