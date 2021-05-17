@@ -36,7 +36,7 @@ module "sg-jenkins" {
   ingress_with_cidr_blocks = [
     {
       rule        = "ssh-tcp"
-      cidr_blocks = "18.206.107.24/29"
+      cidr_blocks = lookup(local.EC2_INSTANCE_CONNECT, var.AWS_DEFAULT_REGION)
       description = "EC2_INSTANCE_CONNECT"
     },
     {
@@ -47,7 +47,7 @@ module "sg-jenkins" {
 
   egress_rules = ["all-all"]
 
-  tags = local.tags
+  tags = local.PROJECT_TAGS
 }
 
 module "key-jenkins" {
@@ -57,7 +57,7 @@ module "key-jenkins" {
   key_name   = "jenkins-key"
   public_key = var.SSH_PUBLIC_KEY
 
-  tags = local.tags
+  tags = local.PROJECT_TAGS
 }
 
 module "ec2-jenkins" {
@@ -83,12 +83,12 @@ module "ec2-jenkins" {
     }
   ]
 
-  tags        = local.tags
-  volume_tags = local.tags
+  tags        = local.PROJECT_TAGS
+  volume_tags = local.PROJECT_TAGS
 }
 
 resource "aws_eip" "eip-jenkins" {
   vpc      = true
   instance = module.ec2-jenkins.id[0]
-  tags     = local.tags
+  tags     = local.PROJECT_TAGS
 }
