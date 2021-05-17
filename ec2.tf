@@ -38,17 +38,29 @@ module "sg-jenkins" {
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["http-80-tcp", "https-443-tcp", "all-icmp"]
 
-  ingress_with_cidr_blocks = [
-    {
-      rule        = "ssh-tcp"
-      cidr_blocks = lookup(local.EC2_INSTANCE_CONNECT, var.AWS_DEFAULT_REGION)
-      description = "EC2_INSTANCE_CONNECT"
-    },
-    {
-      rule        = "ssh-tcp"
-      cidr_blocks = var.PUBLIC_IP
-    }
-  ]
+  ingress_with_cidr_blocks = concat(
+    var.EC2_INSTANCE_CONNECT == true ? [
+      {
+        rule        = "ssh-tcp"
+        cidr_blocks = lookup(local.EC2_INSTANCE_CONNECT, var.AWS_DEFAULT_REGION)
+        description = "EC2_INSTANCE_CONNECT"
+      }
+    ] : [],
+    var.PUBLIC_IP != null ? [
+      {
+        rule        = "ssh-tcp"
+        cidr_blocks = var.PUBLIC_IP
+        description = "SSH"
+      }
+    ] : [],
+    var.EC2_INSTANCE_CONNECT != true && var.PUBLIC_IP == null ? [
+      {
+        rule        = "ssh-tcp"
+        cidr_blocks = "0.0.0.0/0"
+        description = "SSH"
+      }
+    ] : []
+  )
 
   egress_rules = ["all-all"]
 
