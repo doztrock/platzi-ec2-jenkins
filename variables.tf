@@ -16,10 +16,16 @@ variable "AWS_DEFAULT_REGION" {
   default = "us-east-1"
 }
 
-variable "SSH_PUBLIC_KEY" {
-  type = string
+variable "EC2_INSTANCE_CONNECT" {
+  type = bool
 }
 
 variable "PUBLIC_IP" {
-  type = string
+  type    = string
+  default = null
+}
+
+variable "SSH_PUBLIC_KEY" {
+  type    = string
+  default = null
 }
