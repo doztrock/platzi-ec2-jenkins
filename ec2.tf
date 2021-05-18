@@ -110,8 +110,41 @@ module "ec2-jenkins-master" {
   volume_tags = local.PROJECT_TAGS
 }
 
+module "ec2-jenkins-slave" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "2.19.0"
+
+  name = "jenkins-slave-ec2"
+
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t2.small"
+
+  key_name = module.key-jenkins.key_pair_key_name
+
+  subnet_id                   = tolist(data.aws_subnet_ids.all.ids)[0]
+  associate_public_ip_address = true
+
+  vpc_security_group_ids = [module.sg-jenkins.security_group_id]
+
+  root_block_device = [
+    {
+      volume_type = "gp2"
+      volume_size = 30
+    }
+  ]
+
+  tags        = local.PROJECT_TAGS
+  volume_tags = local.PROJECT_TAGS
+}
+
 resource "aws_eip" "eip-jenkins-master" {
   vpc      = true
   instance = module.ec2-jenkins-master.id[0]
+  tags     = local.PROJECT_TAGS
+}
+
+resource "aws_eip" "eip-jenkins-slave" {
+  vpc      = true
+  instance = module.ec2-jenkins-slave.id[0]
   tags     = local.PROJECT_TAGS
 }
