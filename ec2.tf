@@ -59,7 +59,13 @@ module "sg-jenkins" {
         cidr_blocks = "0.0.0.0/0"
         description = "SSH"
       }
-    ] : []
+      ] : [
+      {
+        rule        = "ssh-tcp"
+        cidr_blocks = data.aws_vpc.default.cidr_block
+        description = "SSH"
+      }
+    ]
   )
 
   egress_rules = ["all-all"]
@@ -77,11 +83,11 @@ module "key-jenkins" {
   tags = local.PROJECT_TAGS
 }
 
-module "ec2-jenkins" {
+module "ec2-jenkins-master" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "2.19.0"
 
-  name = "jenkins-ec2"
+  name = "jenkins-master-ec2"
 
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.small"
@@ -104,8 +110,8 @@ module "ec2-jenkins" {
   volume_tags = local.PROJECT_TAGS
 }
 
-resource "aws_eip" "eip-jenkins" {
+resource "aws_eip" "eip-jenkins-master" {
   vpc      = true
-  instance = module.ec2-jenkins.id[0]
+  instance = module.ec2-jenkins-master.id[0]
   tags     = local.PROJECT_TAGS
 }
